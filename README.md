@@ -114,9 +114,18 @@ GTREE_INSTALL_DIR=/opt/bin curl -sSfL .../install.sh | sh
 ```
 
 ### Homebrew (macOS / Linux)
+
 ```sh
-brew install hamimlohani/tap/gtree
+# Install latest from source (builds with Go — works before a tagged release)
+brew install --HEAD hamimlohani/tap/gtree
 ```
+
+> **After the first `make tag VERSION=v1.0.0`**, goreleaser will update the tap formula
+> with a stable tarball URL + SHA-256, and you can drop `--HEAD`:
+> ```sh
+> brew install hamimlohani/tap/gtree
+> brew upgrade gtree   # upgrade to latest release
+> ```
 
 ### Pre-built binary
 Download from the [Releases page](https://github.com/hamimlohani/gtree/releases):

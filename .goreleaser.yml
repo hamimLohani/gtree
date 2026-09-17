@@ -103,19 +103,21 @@ release:
     ```
 
 # ── Homebrew tap ──────────────────────────────────────────────────────────────
-# Uncomment once you have a hamimlohani/homebrew-tap repo.
-#
-# brews:
-#   - name: gtree
-#     tap:
-#       owner: hamimlohani
-#       name: homebrew-tap
-#     homepage: https://github.com/hamimlohani/gtree
-#     description: "Scan your directory tree for git repositories and display their status."
-#     license: MIT
-#     commit_author:
-#       name: hamimlohani
-#       email: you@example.com
-#     install: bin.install "gtree"
-#     test: |
-#       system "#{bin}/gtree", "--version"
+# goreleaser auto-updates Formula/gtree.rb in homebrew-tap on every release.
+brews:
+  - name: gtree
+    tap:
+      owner: hamimLohani
+      name: homebrew-tap
+    homepage: https://github.com/hamimLohani/gtree
+    description: "Scan your directory tree for git repositories and display their status."
+    license: MIT
+    commit_author:
+      name: hamimLohani
+      email: hamimlohani@users.noreply.github.com
+    dependencies:
+      - name: git
+    install: bin.install "gtree"
+    test: |
+      assert_match "gtree", shell_output("#{bin}/gtree --version")
+      system bin/"gtree", testpath.to_s, "--depth", "1"
