@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"sort"
 	"sync"
+	"time"
 
 	"golang.org/x/sync/semaphore"
 )
@@ -46,6 +47,8 @@ type Repo struct {
 	StashCount int
 	// LastCommit is a human-relative time string (e.g. "2h ago").
 	LastCommit string
+	// LastCommitAt is the machine-readable commit timestamp used for sorting.
+	LastCommitAt time.Time
 	// Error records any non-fatal error encountered while collecting info.
 	Error error
 }
@@ -80,7 +83,7 @@ func Scan(root string, opts Options) ([]*Repo, error) {
 
 	var wg sync.WaitGroup
 	for _, p := range repoPaths {
-		p := p // capture
+		p := p // capture loop var
 		wg.Add(1)
 		if err := sem.Acquire(ctx, 1); err != nil {
 			wg.Done()
@@ -98,7 +101,7 @@ func Scan(root string, opts Options) ([]*Repo, error) {
 	}
 	wg.Wait()
 
-	// Phase 3: filter and sort.
+	// Phase 3: filter.
 	if opts.OnlyDirty {
 		filtered := repos[:0]
 		for _, r := range repos {
@@ -109,15 +112,12 @@ func Scan(root string, opts Options) ([]*Repo, error) {
 		repos = filtered
 	}
 
+	// Phase 4: sort.
 	sortRepos(repos, opts.SortOrder)
 
-	// Combine walk errors into a single non-nil error if any occurred.
+	// Collect walk errors into one combined error (non-fatal).
 	var combinedErr error
 	if len(walkErrors) > 0 {
-		msgs := make([]string, len(walkErrors))
-		for i, e := range walkErrors {
-			msgs[i] = e.Error()
-		}
 		combinedErr = fmt.Errorf("%d path(s) skipped due to errors (first: %s)", len(walkErrors), walkErrors[0])
 	}
 
@@ -125,7 +125,6 @@ func Scan(root string, opts Options) ([]*Repo, error) {
 }
 
 // walkRepos recursively walks root, appending git repo paths to out.
-// It skips ignored directories and respects the max depth.
 func walkRepos(root string, maxDepth int, ignored map[string]bool, out *[]string, errs *[]error) error {
 	return walkDir(root, root, 0, maxDepth, ignored, out, errs)
 }
@@ -158,23 +157,20 @@ func walkDir(root, dir string, depth, maxDepth int, ignored map[string]bool, out
 		fullPath := filepath.Join(dir, name)
 
 		if name == ".git" {
-			// Found a git repo: record the parent directory.
-			repoRoot := dir
-			// Skip submodule .git files (they're files, not dirs).
+			// Skip submodule .git files (files, not dirs).
 			info, err := e.Info()
 			if err != nil || info.Mode()&fs.ModeSymlink != 0 {
 				continue
 			}
-			// Skip bare repos (no working tree, .git is the repo root itself).
+			// Skip bare repos.
 			if isBareRepo(dir) {
 				continue
 			}
-			*out = append(*out, repoRoot)
-			// Don't recurse into nested repos' contents.
-			return nil
+			*out = append(*out, dir) // record the repo root (parent of .git)
+			return nil               // don't recurse inside a repo
 		}
 
-		// Check for symlinks to avoid loops.
+		// Skip symlinks to avoid loops.
 		info, err := e.Info()
 		if err != nil {
 			continue
@@ -190,10 +186,8 @@ func walkDir(root, dir string, depth, maxDepth int, ignored map[string]bool, out
 	return nil
 }
 
-// isBareRepo returns true if dir looks like a bare git repository
-// (contains HEAD, objects, refs directly rather than a .git subdir).
+// isBareRepo returns true if dir looks like a bare git repository.
 func isBareRepo(dir string) bool {
-	// A bare repo has HEAD and objects/ directly inside.
 	for _, marker := range []string{"HEAD", "objects", "refs"} {
 		if _, err := os.Stat(filepath.Join(dir, marker)); err != nil {
 			return false
@@ -210,17 +204,21 @@ func isBareRepo(dir string) bool {
 func sortRepos(repos []*Repo, order string) {
 	switch order {
 	case "dirty":
+		// Dirty first, then by path within each group.
 		sort.Slice(repos, func(i, j int) bool {
 			if repos[i].IsDirty != repos[j].IsDirty {
-				return repos[i].IsDirty // dirty first
+				return repos[i].IsDirty
 			}
 			return repos[i].Path < repos[j].Path
 		})
 	case "recent":
-		// LastCommit is a human string; for now fall back to name sort.
-		// Step 3 will store a time.Time for proper sorting.
+		// Most recently committed first; zero time goes last.
 		sort.Slice(repos, func(i, j int) bool {
-			return repos[i].Path < repos[j].Path
+			ti, tj := repos[i].LastCommitAt, repos[j].LastCommitAt
+			if ti.IsZero() != tj.IsZero() {
+				return !ti.IsZero() // non-zero before zero
+			}
+			return ti.After(tj)
 		})
 	default: // "name"
 		sort.Slice(repos, func(i, j int) bool {

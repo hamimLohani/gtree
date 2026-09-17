@@ -1,0 +1,49 @@
+version: "2"
+
+linters:
+  enable:
+    - errcheck       # check error return values
+    - gosimple       # simplification suggestions
+    - govet          # vet checks
+    - ineffassign    # detect ineffectual assignments
+    - staticcheck    # static analysis
+    - unused         # unused code
+    - gofmt          # formatting
+    - goimports      # import organization
+    - misspell       # spelling mistakes
+    - gocritic       # style and performance
+    - prealloc       # slice pre-allocation
+    - unconvert      # unnecessary type conversions
+    - unparam        # unused function parameters
+
+linters-settings:
+  govet:
+    enable-all: true
+  gofmt:
+    simplify: true
+  goimports:
+    local-prefixes: github.com/hamimlohani/gtree
+  misspell:
+    locale: US
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - performance
+      - style
+
+issues:
+  exclude-rules:
+    # Test files are allowed to be less strict.
+    - path: "_test\\.go"
+      linters:
+        - errcheck
+        - gocritic
+    # Allow long lines in generated or config files.
+    - path: "cmd/"
+      text: "line-length"
+  max-issues-per-linter: 50
+  max-same-issues: 10
+
+run:
+  timeout: 5m
+  go: "1.21"

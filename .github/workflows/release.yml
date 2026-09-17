@@ -3,20 +3,41 @@ name: Release
 on:
   push:
     tags:
-      - "v*"
+      - "v*.*.*"
 
 permissions:
-  contents: write
+  contents: write   # needed to create GitHub Releases
 
 jobs:
-  release:
-    name: Goreleaser Release
+  # Run tests before publishing — abort release on failure.
+  test:
+    name: Pre-release tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.21"
+          cache: true
+
+      - name: Test
+        run: go test -race ./...
+
+  release:
+    name: Goreleaser Release
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history for changelog)
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # goreleaser needs full history for changelog
+          fetch-depth: 0
+
+      - name: Fetch all tags
+        run: git fetch --force --tags
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -27,7 +48,7 @@ jobs:
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v5
         with:
-          version: latest
+          version: "~> v2"
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

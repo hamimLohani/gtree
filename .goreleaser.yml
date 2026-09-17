@@ -2,10 +2,13 @@ version: 2
 
 project_name: gtree
 
+# ── Pre-release hooks ─────────────────────────────────────────────────────────
 before:
   hooks:
     - go mod tidy
+    - go vet ./...
 
+# ── Build ─────────────────────────────────────────────────────────────────────
 builds:
   - id: gtree
     main: .
@@ -23,17 +26,52 @@ builds:
       - amd64
       - arm64
 
+# ── Archives ──────────────────────────────────────────────────────────────────
+# Publish tarballs for Linux (common for curl-install) and bare binaries for macOS.
 archives:
-  - id: default
-    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}"
-    format: binary   # just the bare binary, no tarball for now
+  - id: linux-tarballs
+    builds: [gtree]
+    format: tar.gz
+    name_template: "{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
+    format_overrides:
+      - goos: darwin
+        format: binary   # macOS: just the bare binary (Homebrew handles everything)
     files:
       - README.md
       - LICENSE
 
+# ── Checksums ─────────────────────────────────────────────────────────────────
 checksum:
   name_template: "checksums.txt"
+  algorithm: sha256
 
+# ── Changelog ─────────────────────────────────────────────────────────────────
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - "^ci:"
+      - "Merge pull request"
+      - "Merge branch"
+      - typo
+  groups:
+    - title: "✨ New Features"
+      regexp: "^feat"
+      order: 0
+    - title: "🐛 Bug Fixes"
+      regexp: "^fix"
+      order: 1
+    - title: "⚡ Performance"
+      regexp: "^perf"
+      order: 2
+    - title: "🔧 Other Changes"
+      order: 999
+
+# ── GitHub Release ────────────────────────────────────────────────────────────
 release:
   github:
     owner: hamimlohani
@@ -41,12 +79,43 @@ release:
   draft: false
   prerelease: auto
   name_template: "gtree {{.Version}}"
+  header: |
+    ## gtree {{.Version}}
 
-changelog:
-  sort: asc
-  filters:
-    exclude:
-      - "^docs:"
-      - "^test:"
-      - "^chore:"
-      - "typo"
+    Thank you for using gtree! See below for what changed.
+  footer: |
+    ---
+    **Full Changelog**: https://github.com/hamimlohani/gtree/compare/{{ .PreviousTag }}...{{ .Tag }}
+
+    ### Install
+    ```sh
+    # macOS (Apple Silicon)
+    curl -L https://github.com/hamimlohani/gtree/releases/download/{{.Tag}}/gtree-darwin-arm64 \
+      -o /usr/local/bin/gtree && chmod +x /usr/local/bin/gtree
+
+    # macOS (Intel)
+    curl -L https://github.com/hamimlohani/gtree/releases/download/{{.Tag}}/gtree-darwin-amd64 \
+      -o /usr/local/bin/gtree && chmod +x /usr/local/bin/gtree
+
+    # Linux (amd64)
+    curl -L https://github.com/hamimlohani/gtree/releases/download/{{.Tag}}/gtree-{{.Version}}-linux-amd64.tar.gz \
+      | tar xz -C /usr/local/bin
+    ```
+
+# ── Homebrew tap ──────────────────────────────────────────────────────────────
+# Uncomment once you have a hamimlohani/homebrew-tap repo.
+#
+# brews:
+#   - name: gtree
+#     tap:
+#       owner: hamimlohani
+#       name: homebrew-tap
+#     homepage: https://github.com/hamimlohani/gtree
+#     description: "Scan your directory tree for git repositories and display their status."
+#     license: MIT
+#     commit_author:
+#       name: hamimlohani
+#       email: you@example.com
+#     install: bin.install "gtree"
+#     test: |
+#       system "#{bin}/gtree", "--version"

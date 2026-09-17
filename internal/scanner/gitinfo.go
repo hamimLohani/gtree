@@ -10,15 +10,14 @@ import (
 )
 
 // collectInfo runs git commands against repoPath and returns a populated Repo.
-// All errors are non-fatal: the field is left at its zero value and Repo.Error
-// is set so callers can decide whether to display a warning.
+// All errors are non-fatal: fields are left at zero values on failure.
 func collectInfo(repoPath string) *Repo {
 	repo := &Repo{Path: repoPath}
 	repo.Branch = branch(repoPath)
 	repo.IsDirty, repo.ChangedFiles = dirtyState(repoPath)
 	repo.Ahead, repo.Behind = aheadBehind(repoPath)
 	repo.StashCount = stashCount(repoPath)
-	repo.LastCommit = lastCommitTime(repoPath)
+	repo.LastCommit, repo.LastCommitAt = lastCommitTime(repoPath)
 	return repo
 }
 
@@ -111,18 +110,19 @@ func stashCount(dir string) int {
 	return count
 }
 
-// lastCommitTime returns a human-relative string for the most recent commit.
-func lastCommitTime(dir string) string {
+// lastCommitTime returns a human-relative string and exact timestamp for the most recent commit.
+func lastCommitTime(dir string) (string, time.Time) {
 	// %ct is the Unix timestamp of the commit.
 	tsStr := runGit(dir, "log", "-1", "--format=%ct")
 	if tsStr == "" {
-		return "no commits"
+		return "no commits", time.Time{}
 	}
 	ts, err := strconv.ParseInt(tsStr, 10, 64)
 	if err != nil {
-		return "unknown"
+		return "unknown", time.Time{}
 	}
-	return humanDuration(time.Since(time.Unix(ts, 0)))
+	t := time.Unix(ts, 0)
+	return humanDuration(time.Since(t)), t
 }
 
 // humanDuration returns a short, human-readable duration string.

@@ -1,0 +1,36 @@
+# ── Build artifacts ───────────────────────────────────────────────────────────
+gtree
+dist/
+
+# ── Go toolchain ──────────────────────────────────────────────────────────────
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+coverage.html
+
+# ── Editor / OS ───────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.iml
+
+# ── goreleaser ────────────────────────────────────────────────────────────────
+.goreleaser-debug.log

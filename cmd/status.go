@@ -7,7 +7,7 @@ import (
 
 	"github.com/hamimlohani/gtree/internal/config"
 	"github.com/hamimlohani/gtree/internal/scanner"
-	"github.com/hamimlohani/gtree/internal/tree"
+	"github.com/hamimlohani/gtree/internal/tui"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -34,7 +34,7 @@ func init() {
 // runStatus is shared between the root command (gtree [path]) and the
 // explicit status subcommand (gtree status [path]).
 func runStatus(cmd *cobra.Command, args []string) error {
-	// --- Resolve scan path ---
+	// ── Resolve scan path ────────────────────────────────────────────────
 	scanPath := "."
 	if len(args) > 0 {
 		scanPath = args[0]
@@ -50,24 +50,28 @@ func runStatus(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("cannot access path %q: %w", absPath, err)
 	}
 
-	// --- Load/create config ---
+	// ── Load / create config ─────────────────────────────────────────────
 	cfg, err := config.LoadOrCreate()
 	if err != nil {
 		return fmt.Errorf("config error: %w", err)
 	}
 
-	// Flag overrides win over config file.
+	// Flag overrides win over config file defaults.
 	depth := viper.GetInt("depth")
 	if depth == 0 {
 		depth = cfg.DefaultDepth
 	}
+
 	onlyDirty := viper.GetBool("only_dirty")
+
 	sortOrder := viper.GetString("sort")
 	if sortOrder == "" {
 		sortOrder = cfg.DefaultSort
 	}
 
-	// --- Build scanner options ---
+	watch := viper.GetBool("watch")
+
+	// ── Build scanner options ─────────────────────────────────────────────
 	opts := scanner.Options{
 		MaxDepth:    depth,
 		IgnoreDirs:  cfg.IgnoreDirs,
@@ -76,17 +80,6 @@ func runStatus(cmd *cobra.Command, args []string) error {
 		WorkerCount: 8,
 	}
 
-	// --- Scan ---
-	repos, scanErr := scanner.Scan(absPath, opts)
-	if scanErr != nil {
-		// Non-fatal: Scan returns partial results + a wrapped multi-error.
-		fmt.Fprintf(os.Stderr, "warning: %v\n", scanErr)
-	}
-
-	// --- Render ---
-	t := tree.Build(absPath, repos)
-	renderer := tree.NewPlainRenderer(absPath)
-	renderer.Render(os.Stdout, t)
-
-	return nil
+	// ── Hand off to the TUI ───────────────────────────────────────────────
+	return tui.Run(absPath, opts, cfg, watch)
 }
