@@ -1,5 +1,3 @@
-version: "2"
-
 linters:
   enable:
     - errcheck       # check error return values
@@ -17,6 +15,11 @@ linters:
     - unparam        # unused function parameters
 
 linters-settings:
+  errcheck:
+    exclude-functions:
+      - fmt.Fprintf
+      - fmt.Fprintln
+      - fmt.Fprint
   govet:
     enable-all: true
   gofmt:
