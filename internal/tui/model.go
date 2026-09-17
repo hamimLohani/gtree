@@ -11,11 +11,12 @@ import (
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"golang.org/x/term"
+
 	"github.com/hamimlohani/gtree/internal/config"
 	"github.com/hamimlohani/gtree/internal/scanner"
 	"github.com/hamimlohani/gtree/internal/theme"
 	"github.com/hamimlohani/gtree/internal/tree"
-	"golang.org/x/term"
 )
 
 const watchInterval = 5 * time.Second
@@ -147,7 +148,7 @@ func (m Model) View() string {
 
 // ── Rendering helpers ─────────────────────────────────────────────────────────
 
-func (m Model) doScan() tea.Cmd {
+func (m *Model) doScan() tea.Cmd {
 	return func() tea.Msg {
 		repos, err := scanner.Scan(m.scanRoot, m.opts)
 		return scanDoneMsg{repos: repos, err: err}
@@ -155,7 +156,7 @@ func (m Model) doScan() tea.Cmd {
 }
 
 // renderSpinner shows the animated spinner while scanning from scratch.
-func (m Model) renderSpinner() string {
+func (m *Model) renderSpinner() string {
 	p, plain := theme.Load(m.cfg.Theme)
 	path := collapseTilde(m.scanRoot)
 
@@ -176,7 +177,7 @@ func (m Model) renderSpinner() string {
 }
 
 // renderRefreshOverlay renders the cached tree with a "refreshing" badge at top.
-func (m Model) renderRefreshOverlay() string {
+func (m *Model) renderRefreshOverlay() string {
 	p, plain := theme.Load(m.cfg.Theme)
 	if plain {
 		return m.output + "\nRefreshing...\n"
@@ -191,7 +192,7 @@ func (m Model) renderRefreshOverlay() string {
 }
 
 // renderWatchHint renders the key-hint bar at the bottom in watch mode.
-func (m Model) renderWatchHint() string {
+func (m *Model) renderWatchHint() string {
 	p, plain := theme.Load(m.cfg.Theme)
 
 	age := ""
@@ -218,7 +219,7 @@ func (m Model) renderWatchHint() string {
 }
 
 // renderTree builds the full styled tree output.
-func (m Model) renderTree() string {
+func (m *Model) renderTree() string {
 	root := tree.Build(m.scanRoot, m.repos)
 	renderer := tree.NewStyledRenderer(m.scanRoot, m.cfg.Theme)
 

@@ -14,7 +14,7 @@ import (
 	"golang.org/x/sync/semaphore"
 )
 
-// Options controls scanner behaviour.
+// Options controls scanner behavior.
 type Options struct {
 	// MaxDepth is the maximum directory depth to recurse into.
 	// 0 means unlimited.
@@ -126,10 +126,10 @@ func Scan(root string, opts Options) ([]*Repo, error) {
 
 // walkRepos recursively walks root, appending git repo paths to out.
 func walkRepos(root string, maxDepth int, ignored map[string]bool, out *[]string, errs *[]error) error {
-	return walkDir(root, root, 0, maxDepth, ignored, out, errs)
+	return walkDir(root, 0, maxDepth, ignored, out, errs)
 }
 
-func walkDir(root, dir string, depth, maxDepth int, ignored map[string]bool, out *[]string, errs *[]error) error {
+func walkDir(dir string, depth, maxDepth int, ignored map[string]bool, out *[]string, errs *[]error) error {
 	if maxDepth > 0 && depth > maxDepth {
 		return nil
 	}
@@ -179,7 +179,7 @@ func walkDir(root, dir string, depth, maxDepth int, ignored map[string]bool, out
 			continue
 		}
 
-		if err := walkDir(root, fullPath, depth+1, maxDepth, ignored, out, errs); err != nil {
+		if err := walkDir(fullPath, depth+1, maxDepth, ignored, out, errs); err != nil {
 			return err
 		}
 	}

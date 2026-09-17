@@ -52,18 +52,18 @@ func branch(dir string) string {
 }
 
 // dirtyState returns whether the repo has uncommitted changes and how many files are affected.
-func dirtyState(dir string) (bool, int) {
+func dirtyState(dir string) (isDirty bool, changedFiles int) {
 	return parsePorcelain(runGit(dir, "status", "--porcelain"))
 }
 
 // parsePorcelain counts non-empty lines in git status --porcelain output.
 // Extracted as a pure function for testability.
-func parsePorcelain(output string) (bool, int) {
+func parsePorcelain(output string) (isDirty bool, count int) {
 	if strings.TrimSpace(output) == "" {
 		return false, 0
 	}
 	lines := strings.Split(strings.TrimSpace(output), "\n")
-	count := 0
+	count = 0
 	for _, l := range lines {
 		if strings.TrimSpace(l) != "" {
 			count++

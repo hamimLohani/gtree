@@ -5,11 +5,12 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+
 	"github.com/hamimlohani/gtree/internal/config"
 	"github.com/hamimlohani/gtree/internal/scanner"
 	"github.com/hamimlohani/gtree/internal/tui"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // statusCmd implements the explicit `gtree status [path]` subcommand.
@@ -46,8 +47,8 @@ func runStatus(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("invalid path %q: %w", scanPath, err)
 	}
-	if _, err := os.Stat(absPath); err != nil {
-		return fmt.Errorf("cannot access path %q: %w", absPath, err)
+	if _, statErr := os.Stat(absPath); statErr != nil {
+		return fmt.Errorf("cannot access path %q: %w", absPath, statErr)
 	}
 
 	// ── Load / create config ─────────────────────────────────────────────

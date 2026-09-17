@@ -22,6 +22,8 @@ linters-settings:
       - fmt.Fprint
   govet:
     enable-all: true
+    disable:
+      - fieldalignment
   gofmt:
     simplify: true
   goimports:

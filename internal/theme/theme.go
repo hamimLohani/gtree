@@ -10,7 +10,7 @@ import (
 	"github.com/muesli/termenv"
 )
 
-// Palette holds all named colours used across the UI.
+// Palette holds all named colors used across the UI.
 type Palette struct {
 	// Header
 	HeaderBg   lipgloss.Color

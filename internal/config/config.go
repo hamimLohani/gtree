@@ -76,7 +76,7 @@ func LoadOrCreate() (*Config, error) {
 	return &cfg, nil
 }
 
-// write serialises cfg as YAML to path, creating parent directories if needed.
+// write serializes cfg as YAML to path, creating parent directories if needed.
 func write(path string, cfg *Config) error {
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return err

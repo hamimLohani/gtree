@@ -175,4 +175,3 @@ func TestSortByRecent(t *testing.T) {
 		t.Errorf("oldest should be last, got %s", repos[2].Path)
 	}
 }
-

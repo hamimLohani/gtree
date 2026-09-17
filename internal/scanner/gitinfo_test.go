@@ -33,10 +33,10 @@ func TestDirtyStateParsing(t *testing.T) {
 	// We test the line-counting logic indirectly via a helper that
 	// accepts porcelain output directly.
 	tests := []struct {
-		name         string
-		porcelain    string
-		wantDirty    bool
-		wantCount    int
+		name      string
+		porcelain string
+		wantDirty bool
+		wantCount int
 	}{
 		{"clean", "", false, 0},
 		{"one modified", " M foo.go", true, 1},
@@ -58,10 +58,10 @@ func TestDirtyStateParsing(t *testing.T) {
 
 func TestAheadBehindParsing(t *testing.T) {
 	tests := []struct {
-		name        string
-		output      string
-		wantAhead   int
-		wantBehind  int
+		name       string
+		output     string
+		wantAhead  int
+		wantBehind int
 	}{
 		{"no upstream", "", 0, 0},
 		{"ahead 2", "2\t0", 2, 0},

@@ -7,8 +7,9 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/hamimlohani/gtree/internal/theme"
 	"golang.org/x/term"
+
+	"github.com/hamimlohani/gtree/internal/theme"
 )
 
 // StyledRenderer renders the tree with full lipgloss styling.
@@ -22,7 +23,7 @@ type StyledRenderer struct {
 
 // NewStyledRenderer creates a renderer that adapts to the terminal's color
 // capabilities and width.
-func NewStyledRenderer(root string, themeName string) *StyledRenderer {
+func NewStyledRenderer(root, themeName string) *StyledRenderer {
 	palette, plain := theme.Load(themeName)
 	width, _, err := term.GetSize(1) // fd 1 = stdout
 	if err != nil || width <= 0 {
@@ -240,11 +241,11 @@ func (r *StyledRenderer) renderFooter(total, dirty, unpushed int) string {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-// truncate shortens s to max runes, appending "…" if cut.
-func truncate(s string, max int) string {
+// truncate shortens s to maxLen runes, appending "…" if cut.
+func truncate(s string, maxLen int) string {
 	runes := []rune(s)
-	if len(runes) <= max {
+	if len(runes) <= maxLen {
 		return s
 	}
-	return string(runes[:max-1]) + "…"
+	return string(runes[:maxLen-1]) + "…"
 }

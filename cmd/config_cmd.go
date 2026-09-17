@@ -5,8 +5,9 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/hamimlohani/gtree/internal/config"
 	"github.com/spf13/cobra"
+
+	"github.com/hamimlohani/gtree/internal/config"
 )
 
 var configCmd = &cobra.Command{
