@@ -35,6 +35,8 @@ linters-settings:
       - diagnostic
       - performance
       - style
+    disabled-checks:
+      - hugeParam
 
 issues:
   exclude-rules:
