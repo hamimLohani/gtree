@@ -1,0 +1,92 @@
+package cmd
+
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+
+	"github.com/hamimlohani/gtree/internal/config"
+	"github.com/hamimlohani/gtree/internal/scanner"
+	"github.com/hamimlohani/gtree/internal/tree"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+)
+
+// statusCmd implements the explicit `gtree status [path]` subcommand.
+var statusCmd = &cobra.Command{
+	Use:   "status [path]",
+	Short: "Scan a directory and display git repository status",
+	Long: `Scan a directory tree for git repositories and display their
+status in a nested, styled tree view.
+
+Examples:
+  gtree status                 Scan current directory
+  gtree status ~/Projects      Scan a specific path
+  gtree status . --depth 3     Limit recursion depth`,
+	Args: cobra.MaximumNArgs(1),
+	RunE: runStatus,
+}
+
+func init() {
+	rootCmd.AddCommand(statusCmd)
+}
+
+// runStatus is shared between the root command (gtree [path]) and the
+// explicit status subcommand (gtree status [path]).
+func runStatus(cmd *cobra.Command, args []string) error {
+	// --- Resolve scan path ---
+	scanPath := "."
+	if len(args) > 0 {
+		scanPath = args[0]
+	} else if viper.GetString("default_path") != "" {
+		scanPath = viper.GetString("default_path")
+	}
+
+	absPath, err := filepath.Abs(scanPath)
+	if err != nil {
+		return fmt.Errorf("invalid path %q: %w", scanPath, err)
+	}
+	if _, err := os.Stat(absPath); err != nil {
+		return fmt.Errorf("cannot access path %q: %w", absPath, err)
+	}
+
+	// --- Load/create config ---
+	cfg, err := config.LoadOrCreate()
+	if err != nil {
+		return fmt.Errorf("config error: %w", err)
+	}
+
+	// Flag overrides win over config file.
+	depth := viper.GetInt("depth")
+	if depth == 0 {
+		depth = cfg.DefaultDepth
+	}
+	onlyDirty := viper.GetBool("only_dirty")
+	sortOrder := viper.GetString("sort")
+	if sortOrder == "" {
+		sortOrder = cfg.DefaultSort
+	}
+
+	// --- Build scanner options ---
+	opts := scanner.Options{
+		MaxDepth:    depth,
+		IgnoreDirs:  cfg.IgnoreDirs,
+		OnlyDirty:   onlyDirty,
+		SortOrder:   sortOrder,
+		WorkerCount: 8,
+	}
+
+	// --- Scan ---
+	repos, scanErr := scanner.Scan(absPath, opts)
+	if scanErr != nil {
+		// Non-fatal: Scan returns partial results + a wrapped multi-error.
+		fmt.Fprintf(os.Stderr, "warning: %v\n", scanErr)
+	}
+
+	// --- Render ---
+	t := tree.Build(absPath, repos)
+	renderer := tree.NewPlainRenderer(absPath)
+	renderer.Render(os.Stdout, t)
+
+	return nil
+}
