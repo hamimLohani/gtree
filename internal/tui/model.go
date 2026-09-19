@@ -143,7 +143,7 @@ func (m Model) View() string {
 	if m.watch {
 		return m.output + m.renderWatchHint()
 	}
-	return m.output
+	return ""
 }
 
 // ── Rendering helpers ─────────────────────────────────────────────────────────
@@ -262,6 +262,19 @@ func collapseTilde(path string) string {
 
 // Run starts the Bubble Tea program and blocks until complete.
 func Run(scanRoot string, opts scanner.Options, cfg *config.Config, watch bool) error {
+	if !watch && !term.IsTerminal(int(os.Stdout.Fd())) {
+		repos, scanErr := scanner.Scan(scanRoot, opts)
+		m := Model{
+			scanRoot: scanRoot,
+			opts:     opts,
+			cfg:      cfg,
+			repos:    repos,
+			scanErr:  scanErr,
+		}
+		fmt.Print(m.renderTree())
+		return nil
+	}
+
 	m := New(scanRoot, opts, cfg, watch)
 
 	var p *tea.Program
