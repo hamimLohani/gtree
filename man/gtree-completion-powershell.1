@@ -1,0 +1,69 @@
+.nh
+.TH "GTREE" "1" "Sep 2026" "gtree dev" "gtree Manual"
+
+.SH NAME
+.PP
+gtree-completion-powershell - Generate the autocompletion script for powershell
+
+
+.SH SYNOPSIS
+.PP
+\fBgtree completion powershell [flags]\fP
+
+
+.SH DESCRIPTION
+.PP
+Generate the autocompletion script for powershell.
+
+.PP
+To load completions in your current shell session:
+
+.EX
+gtree completion powershell | Out-String | Invoke-Expression
+
+.EE
+
+.PP
+To load completions for every new session, add the output of the above command
+to your powershell profile.
+
+
+.SH OPTIONS
+.PP
+\fB-h\fP, \fB--help\fP[=false]
+	help for powershell
+
+.PP
+\fB--no-descriptions\fP[=false]
+	disable completion descriptions
+
+
+.SH OPTIONS INHERITED FROM PARENT COMMANDS
+.PP
+\fB-c\fP, \fB--config\fP=""
+	config file (default ~/.config/gtree/config.yml)
+
+.PP
+\fB-d\fP, \fB--depth\fP=0
+	maximum recursion depth (0 = unlimited)
+
+.PP
+\fB--no-color\fP[=false]
+	disable color output
+
+.PP
+\fB--only-dirty\fP[=false]
+	hide clean repositories
+
+.PP
+\fB-s\fP, \fB--sort\fP=""
+	sort order: dirty|recent|name (default from config)
+
+.PP
+\fB--watch\fP[=false]
+	live-refreshing view (polls every few seconds)
+
+
+.SH SEE ALSO
+.PP
+\fBgtree-completion(1)\fP

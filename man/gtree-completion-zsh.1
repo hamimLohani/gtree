@@ -1,0 +1,92 @@
+.nh
+.TH "GTREE" "1" "Sep 2026" "gtree dev" "gtree Manual"
+
+.SH NAME
+.PP
+gtree-completion-zsh - Generate the autocompletion script for zsh
+
+
+.SH SYNOPSIS
+.PP
+\fBgtree completion zsh [flags]\fP
+
+
+.SH DESCRIPTION
+.PP
+Generate the autocompletion script for the zsh shell.
+
+.PP
+If shell completion is not already enabled in your environment you will need
+to enable it.  You can execute the following once:
+
+.EX
+echo "autoload -U compinit; compinit" >> ~/.zshrc
+
+.EE
+
+.PP
+To load completions in your current shell session:
+
+.EX
+source <(gtree completion zsh)
+
+.EE
+
+.PP
+To load completions for every new session, execute once:
+
+.SS Linux:
+.EX
+gtree completion zsh > "${fpath[1]}/_gtree"
+
+.EE
+
+.SS macOS:
+.EX
+gtree completion zsh > $(brew --prefix)/share/zsh/site-functions/_gtree
+
+.EE
+
+.PP
+You will need to start a new shell for this setup to take effect.
+
+
+.SH OPTIONS
+.PP
+\fB-h\fP, \fB--help\fP[=false]
+	help for zsh
+
+.PP
+\fB--no-descriptions\fP[=false]
+	disable completion descriptions
+
+
+.SH OPTIONS INHERITED FROM PARENT COMMANDS
+.PP
+\fB-c\fP, \fB--config\fP=""
+	config file (default ~/.config/gtree/config.yml)
+
+.PP
+\fB-d\fP, \fB--depth\fP=0
+	maximum recursion depth (0 = unlimited)
+
+.PP
+\fB--no-color\fP[=false]
+	disable color output
+
+.PP
+\fB--only-dirty\fP[=false]
+	hide clean repositories
+
+.PP
+\fB-s\fP, \fB--sort\fP=""
+	sort order: dirty|recent|name (default from config)
+
+.PP
+\fB--watch\fP[=false]
+	live-refreshing view (polls every few seconds)
+
+
+.SH SEE ALSO
+.PP
+\fBgtree-completion(1)\fP

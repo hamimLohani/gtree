@@ -1,0 +1,76 @@
+.nh
+.TH "GTREE" "1" "Sep 2026" "gtree dev" "gtree Manual"
+
+.SH NAME
+.PP
+gtree-completion-fish - Generate the autocompletion script for fish
+
+
+.SH SYNOPSIS
+.PP
+\fBgtree completion fish [flags]\fP
+
+
+.SH DESCRIPTION
+.PP
+Generate the autocompletion script for the fish shell.
+
+.PP
+To load completions in your current shell session:
+
+.EX
+gtree completion fish | source
+
+.EE
+
+.PP
+To load completions for every new session, execute once:
+
+.EX
+gtree completion fish > ~/.config/fish/completions/gtree.fish
+
+.EE
+
+.PP
+You will need to start a new shell for this setup to take effect.
+
+
+.SH OPTIONS
+.PP
+\fB-h\fP, \fB--help\fP[=false]
+	help for fish
+
+.PP
+\fB--no-descriptions\fP[=false]
+	disable completion descriptions
+
+
+.SH OPTIONS INHERITED FROM PARENT COMMANDS
+.PP
+\fB-c\fP, \fB--config\fP=""
+	config file (default ~/.config/gtree/config.yml)
+
+.PP
+\fB-d\fP, \fB--depth\fP=0
+	maximum recursion depth (0 = unlimited)
+
+.PP
+\fB--no-color\fP[=false]
+	disable color output
+
+.PP
+\fB--only-dirty\fP[=false]
+	hide clean repositories
+
+.PP
+\fB-s\fP, \fB--sort\fP=""
+	sort order: dirty|recent|name (default from config)
+
+.PP
+\fB--watch\fP[=false]
+	live-refreshing view (polls every few seconds)
+
+
+.SH SEE ALSO
+.PP
+\fBgtree-completion(1)\fP

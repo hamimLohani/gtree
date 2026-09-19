@@ -1,0 +1,60 @@
+.nh
+.TH "GTREE" "1" "Sep 2026" "gtree dev" "gtree Manual"
+
+.SH NAME
+.PP
+gtree-status - Scan a directory and display git repository status
+
+
+.SH SYNOPSIS
+.PP
+\fBgtree status [path] [flags]\fP
+
+
+.SH DESCRIPTION
+.PP
+Scan a directory tree for git repositories and display their
+status in a nested, styled tree view.
+
+.PP
+Examples:
+  gtree status                 Scan current directory
+  gtree status ~/Projects      Scan a specific path
+  gtree status . --depth 3     Limit recursion depth
+
+
+.SH OPTIONS
+.PP
+\fB-h\fP, \fB--help\fP[=false]
+	help for status
+
+
+.SH OPTIONS INHERITED FROM PARENT COMMANDS
+.PP
+\fB-c\fP, \fB--config\fP=""
+	config file (default ~/.config/gtree/config.yml)
+
+.PP
+\fB-d\fP, \fB--depth\fP=0
+	maximum recursion depth (0 = unlimited)
+
+.PP
+\fB--no-color\fP[=false]
+	disable color output
+
+.PP
+\fB--only-dirty\fP[=false]
+	hide clean repositories
+
+.PP
+\fB-s\fP, \fB--sort\fP=""
+	sort order: dirty|recent|name (default from config)
+
+.PP
+\fB--watch\fP[=false]
+	live-refreshing view (polls every few seconds)
+
+
+.SH SEE ALSO
+.PP
+\fBgtree(1)\fP

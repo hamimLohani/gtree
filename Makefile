@@ -7,6 +7,7 @@ LDFLAGS     := -ldflags "-X $(MODULE)/cmd.Version=$(VERSION) \
 
 BINARY      := gtree
 INSTALL_DIR := $(HOME)/.local/bin
+MAN_DIR     := $(HOME)/.local/share/man/man1
 COVERAGE    := coverage.out
 
 # ─── Development ──────────────────────────────────────────────────────────────
@@ -16,20 +17,29 @@ build: ## Build binary for the local machine
 	go build $(LDFLAGS) -o $(BINARY) .
 	@echo "Built ./$(BINARY)"
 
+.PHONY: man
+man: ## Generate man pages into man/
+	@mkdir -p man
+	go run . man man/
+	@echo "Generated man pages in man/"
+
 .PHONY: run
 run: ## Build and run (pass extra args via ARGS="...")
 	go run $(LDFLAGS) . $(ARGS)
 
 .PHONY: install
-install: build ## Install to $(INSTALL_DIR)
+install: build man ## Install to $(INSTALL_DIR) and man pages
 	@mkdir -p $(INSTALL_DIR)
 	@cp $(BINARY) $(INSTALL_DIR)/$(BINARY)
-	@echo "Installed $(INSTALL_DIR)/$(BINARY)"
+	@mkdir -p $(MAN_DIR)
+	@cp -f man/*.1 $(MAN_DIR)/ 2>/dev/null || true
+	@echo "Installed $(INSTALL_DIR)/$(BINARY) and man pages in $(MAN_DIR)"
 
 .PHONY: uninstall
-uninstall: ## Remove installed binary
+uninstall: ## Remove installed binary and man pages
 	@rm -f $(INSTALL_DIR)/$(BINARY)
-	@echo "Removed $(INSTALL_DIR)/$(BINARY)"
+	@rm -f $(MAN_DIR)/gtree*.1
+	@echo "Removed $(INSTALL_DIR)/$(BINARY) and man pages"
 
 # ─── Quality ──────────────────────────────────────────────────────────────────
 

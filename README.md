@@ -171,6 +171,7 @@ Available Commands:
   version     Print version information
   help        Help about any command
   completion  Generate shell completion script
+  man         Generate man pages into a directory or stdout
 ```
 
 ### Common examples
@@ -218,6 +219,17 @@ gtree completion bash > /etc/bash_completion.d/gtree
 
 # Fish
 gtree completion fish > ~/.config/fish/completions/gtree.fish
+```
+
+### Manual pages
+
+```sh
+# View manual
+man gtree
+
+# Or view/generate directly with gtree
+gtree man               # print roff man page to stdout
+gtree man man/          # generate all man pages into man/
 ```
 
 ---

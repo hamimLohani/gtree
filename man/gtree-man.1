@@ -1,0 +1,60 @@
+.nh
+.TH "GTREE" "1" "Sep 2026" "gtree dev" "gtree Manual"
+
+.SH NAME
+.PP
+gtree-man - Generate man pages for gtree
+
+
+.SH SYNOPSIS
+.PP
+\fBgtree man [directory] [flags]\fP
+
+
+.SH DESCRIPTION
+.PP
+Generate man pages for gtree into the specified directory,
+or print the main man page to stdout if no directory is provided.
+
+.PP
+Examples:
+  gtree man                   # Print gtree man page to stdout
+  gtree man man/              # Generate all man pages into man/ directory
+  gtree man | man -l -        # View man page directly
+
+
+.SH OPTIONS
+.PP
+\fB-h\fP, \fB--help\fP[=false]
+	help for man
+
+
+.SH OPTIONS INHERITED FROM PARENT COMMANDS
+.PP
+\fB-c\fP, \fB--config\fP=""
+	config file (default ~/.config/gtree/config.yml)
+
+.PP
+\fB-d\fP, \fB--depth\fP=0
+	maximum recursion depth (0 = unlimited)
+
+.PP
+\fB--no-color\fP[=false]
+	disable color output
+
+.PP
+\fB--only-dirty\fP[=false]
+	hide clean repositories
+
+.PP
+\fB-s\fP, \fB--sort\fP=""
+	sort order: dirty|recent|name (default from config)
+
+.PP
+\fB--watch\fP[=false]
+	live-refreshing view (polls every few seconds)
+
+
+.SH SEE ALSO
+.PP
+\fBgtree(1)\fP

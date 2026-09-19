@@ -1,0 +1,62 @@
+.nh
+.TH "GTREE" "1" "Sep 2026" "gtree dev" "gtree Manual"
+
+.SH NAME
+.PP
+gtree-config - Show or edit the gtree configuration file
+
+
+.SH SYNOPSIS
+.PP
+\fBgtree config [flags]\fP
+
+
+.SH DESCRIPTION
+.PP
+Show the location of the gtree config file and open it in $EDITOR.
+
+.PP
+Examples:
+  gtree config            Print config file path and current values
+  gtree config --edit     Open config file in $EDITOR
+
+
+.SH OPTIONS
+.PP
+\fB-e\fP, \fB--edit\fP[=false]
+	open config file in $EDITOR
+
+.PP
+\fB-h\fP, \fB--help\fP[=false]
+	help for config
+
+
+.SH OPTIONS INHERITED FROM PARENT COMMANDS
+.PP
+\fB-c\fP, \fB--config\fP=""
+	config file (default ~/.config/gtree/config.yml)
+
+.PP
+\fB-d\fP, \fB--depth\fP=0
+	maximum recursion depth (0 = unlimited)
+
+.PP
+\fB--no-color\fP[=false]
+	disable color output
+
+.PP
+\fB--only-dirty\fP[=false]
+	hide clean repositories
+
+.PP
+\fB-s\fP, \fB--sort\fP=""
+	sort order: dirty|recent|name (default from config)
+
+.PP
+\fB--watch\fP[=false]
+	live-refreshing view (polls every few seconds)
+
+
+.SH SEE ALSO
+.PP
+\fBgtree(1)\fP

@@ -1,0 +1,61 @@
+.nh
+.TH "GTREE" "1" "Sep 2026" "gtree dev" "gtree Manual"
+
+.SH NAME
+.PP
+gtree - A git repository tree viewer
+
+
+.SH SYNOPSIS
+.PP
+\fBgtree [path] [flags]\fP
+
+
+.SH DESCRIPTION
+.PP
+gtree scans a directory tree for git repositories and displays
+their status as a styled, nested tree in the terminal.
+
+.PP
+Examples:
+  gtree                        Scan current directory
+  gtree ~/Projects             Scan a specific path
+  gtree status ~/Projects      Explicit subcommand form
+  gtree --depth 5              Limit recursion depth
+  gtree --only-dirty           Show only dirty repos
+  gtree --watch                Live-refreshing view
+
+
+.SH OPTIONS
+.PP
+\fB-c\fP, \fB--config\fP=""
+	config file (default ~/.config/gtree/config.yml)
+
+.PP
+\fB-d\fP, \fB--depth\fP=0
+	maximum recursion depth (0 = unlimited)
+
+.PP
+\fB-h\fP, \fB--help\fP[=false]
+	help for gtree
+
+.PP
+\fB--no-color\fP[=false]
+	disable color output
+
+.PP
+\fB--only-dirty\fP[=false]
+	hide clean repositories
+
+.PP
+\fB-s\fP, \fB--sort\fP=""
+	sort order: dirty|recent|name (default from config)
+
+.PP
+\fB--watch\fP[=false]
+	live-refreshing view (polls every few seconds)
+
+
+.SH SEE ALSO
+.PP
+\fBgtree-completion(1)\fP, \fBgtree-config(1)\fP, \fBgtree-man(1)\fP, \fBgtree-status(1)\fP, \fBgtree-version(1)\fP
