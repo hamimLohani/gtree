@@ -106,7 +106,7 @@ release:
 # goreleaser auto-updates Formula/gtree.rb in homebrew-tap on every release.
 brews:
   - name: gtree
-    tap:
+    repository:
       owner: hamimLohani
       name: homebrew-tap
     homepage: https://github.com/hamimLohani/gtree
